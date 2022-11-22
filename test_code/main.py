@@ -7,7 +7,7 @@ print(i2c.scan())
 bl = PWM(Pin(29))
 bl.freq(1000)
 
-#bl.duty_u16(65536//2)
+bl.duty_u16(65536//2)
 
 data_p = 24
 clock_p = 25
@@ -38,12 +38,11 @@ fp_white = 0xbf
 fp_green = 0x7f
 led_caps = 0xef
 
-"""
-while True:
-    for i in [fp_red, fp_white, fp_green]:
+#while True:
+for i in range(3):
+    for i in [fp_red, fp_white, fp_green, led_caps]:
         shiftOut(i)
-        sleep(0.1)
-"""
+        sleep(0.5)
 
 r = [12, 0, 13, 1, 14, 2, 15, 3]
 c = [16, 4, 17, 5, 18, 6, 19, 7, 20, 8, 21, 9, 22, 10, 23, 11]
@@ -60,14 +59,22 @@ for col in c:
     p = Pin(col, Pin.IN, Pin.PULL_UP)
     cols.append(p)
 
-def test():
+pressed = []
 
+def test():
     for ri, row in enumerate(rows):
         row.off()
         for ci, col in enumerate(cols):
             st = col.value()
             if not st:
-                print("Pressed: {}-{}".format(ri, ci))
+                name = "{}-{}".format(ri, ci)
+                if name in pressed:
+                    print("Already pressed", name, "!")
+                else:
+                    print("Pressed:", name)
+                    pressed.append(name)
         row.on()
         #sleep(0.01)
     sleep(0.2)
+
+while True: test()
